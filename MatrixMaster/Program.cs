@@ -6,7 +6,8 @@ namespace MatrixMaster
 	{
 		public static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			var matrix = new Matrix(new double[,] { { 5, 7, 8 }, { 0, 0, 3 }, { 0, 0, 5 } } ) ;
+			Console.Write(matrix);
 		}
 	}
 }
