@@ -36,7 +36,7 @@ namespace MatrixMaster
 			- double[,] Elements
 		- En utilisant des méthodes permettant d’obtenir ou de modifier un élément particulier
 		du tableau, comme :
-			- double GetElement(int ligne, int colonne)
+			- double GetElement(int ligne, int colonne) ta tête
 			- void SetElement(int ligne, int colonne, double valeur) */
 		public double this[int row, int column]
 		{
