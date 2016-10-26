@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+
 namespace MatrixMaster
 {
 
@@ -56,7 +58,24 @@ namespace MatrixMaster
 		{
 			get
 			{
-				return 0;
+				if (this.isSquare)
+				{
+					double result = 0;
+
+					for (int i = 0; i < _matrix.GetLength(0); i++)
+					{
+						for (int j = 0; j < _matrix.GetLength(1); j++)
+						{
+							if (i == j) result += _matrix[i, j];
+						}
+					}
+
+					return result;
+				}
+				else 
+				{
+					return 0;
+				}
 			}
 		}
 
@@ -68,11 +87,21 @@ namespace MatrixMaster
 			}
 		}
 
-		public Matrix Transposed //calcule et retourne le déterminant de la matrice, si la matrice est carrée ;
+		public Matrix Transposed //calcule et retourne la transposée de la matrice, si la matrice est carrée ;
 		{
 			get
 			{
-				return null;
+				var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
+
+				for (int i = 0; i < _matrix.GetLength(0); i++ )
+				{
+					for (int j = 0; j < _matrix.GetLength(1); j++)
+					{
+						result[j, i] = _matrix[i, j];
+					}
+				}
+
+				return result;
 			}
 		}
 
@@ -126,6 +155,11 @@ namespace MatrixMaster
 			return null;
 		}
 
+		public bool isSameDimention(Matrix matrix)
+		{
+			return true;
+		}
+
 		//Le produit matriciel (avec une autre Matrice), qui retourne une matrice.
 		/* Vous devez prévoir une version de cette méthode qui prend en
 		paramètre un certain nombre de matrice à multiplier et qui permet de
@@ -155,16 +189,16 @@ namespace MatrixMaster
 		public override string ToString()
 		{
 			string result = "";
-			for (int i = 0; i > _matrix.GetLength(0); i++) {
+			for (int i = 0; i < _matrix.GetLength(0); i++) {
 
 				result += "|";
-				for (int j = 0; j > _matrix.GetLength(1); j++) {
+				for (int j = 0; j < _matrix.GetLength(1); j++) {
 
 					result += _matrix[i, j];
 
-					if (j > _matrix.GetLength(1)) result += "\t";
+					if (j < _matrix.GetLength(1) - 1) result += "\t";
 				}
-				result += "\n";
+				result += "|\n";
 			}
 			return result;
 
