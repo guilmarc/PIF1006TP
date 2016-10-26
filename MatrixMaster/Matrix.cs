@@ -17,7 +17,7 @@ namespace MatrixMaster
 		Strict
 	}
 
-	public class Matrix
+	public class Matrix 
 	{
 		
 
@@ -142,22 +142,68 @@ namespace MatrixMaster
 			}
 		}
 
+		public int GetLength(int dimension)
+		{
+			return _matrix.GetLength(dimension);
+		}
+
+		//public static Matrix operator +(Matrix m1, Matrix m2)
+		//{
+		//	var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
+
+		//	for (int i = 0; i < _matrix.GetLength(0); i++)
+		//	{
+		//		for (int j = 0; j < _matrix.GetLength(1); j++)
+		//		{
+		//			_matrix[i, j] += matrix[i, j];
+		//		}
+		//	}
+
+		//	return result;
+		//}
+
 
 		//l’addition d’une matrice, qui retourne une matrice;
 		public Matrix Add(Matrix matrix)
 		{
-			return null;
+
+			if (!this.isSameDimention(matrix))
+			{
+				throw new ArgumentOutOfRangeException("Inconsistent matrix dimensions");
+			}
+
+			var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
+
+			for (int i = 0; i < _matrix.GetLength(0); i++)
+			{
+				for (int j = 0; j < _matrix.GetLength(1); j++)
+				{
+					result[i, j] = matrix[i, j] + _matrix[i, j];
+				}
+			}
+
+			return result;
 		}
 
 		// Le produit de la matrice par un scalaire,qui retourne une matrice
 		public Matrix Scalar(double number)
 		{
-			return null;
+			var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
+
+			for (int i = 0; i < _matrix.GetLength(0); i++)
+			{
+				for (int j = 0; j < _matrix.GetLength(1); j++)
+				{
+					result[i, j] = _matrix[i, j] * number;
+				}
+			}
+
+			return result;
 		}
 
 		public bool isSameDimention(Matrix matrix)
 		{
-			return true;
+			return (_matrix.GetLength(0) == matrix.GetLength(0)) && (_matrix.GetLength(1) == matrix.GetLength(1)) ;
 		}
 
 		//Le produit matriciel (avec une autre Matrice), qui retourne une matrice.
@@ -167,7 +213,46 @@ namespace MatrixMaster
 		le calcul du produit matriciel. */
 		public Matrix Multiply(Matrix matrix)
 		{
-			return null;
+			int operations;
+			//Vérifie si les matrices sot compatibles à la multiplication
+			if (_matrix.GetLength(1) != matrix.GetLength(0))
+			{
+				throw new ArgumentOutOfRangeException("Invalid matrix length");
+			}
+			else {
+				operations = _matrix.GetLength(1);
+			}
+
+			//On crée la matrice résultante de la hauteur de l'origine et la largeur du multiplicandre
+			var result = new Matrix(new double[_matrix.GetLength(0), matrix.GetLength(1)]);
+
+			for (int i = 0; i < result.GetLength(0); i++)
+			{
+				for (int j = 0; j < result.GetLength(1); j++)
+				{
+					for (int k = 0; k < operations; k++)
+					{
+						result[i, j] += _matrix[i, k] * matrix[k, j];
+					}
+				}
+			}
+
+			return result;
+		}
+
+		private static double ScalarProduct(double[] vector1, double[] vector2)
+		{
+			if (vector1.Length != vector2.Length)
+				throw new ArgumentOutOfRangeException("Invalid vector dimensions");
+
+			double result = 0;
+
+			for (int i = 0; i < vector1.Length; i++)
+			{
+				result += vector1[i] * vector2[i];
+			}
+
+			return result;
 		}
 
 		public Matrix Multiply(out int operations, params Matrix[] matrix )

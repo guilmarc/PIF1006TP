@@ -6,13 +6,17 @@ namespace MatrixMaster
 	{
 		public static void Main(string[] args)
 		{
-			var matrix = new Matrix(new double[,] { { 5, 7, 9 }, { 0, 1, 4 }, { 5, 8, 3 } });
-			var matrix2 = new Matrix(new double[,] { { 5, 7, 9 }, { 0, 1, 4 } });
+			var matrix = new Matrix(new double[,] { { 1, 2, 3 }, { 4, 5, 6 } });
+			var matrix2 = new Matrix(new double[,] { { 9 }, { 8 }, { 7 } });
 
-			Console.WriteLine(matrix.isSquare);
-			Console.WriteLine(matrix.Trace);
+			var matrix3 = new Matrix(new double[,] { { 1, 1, 1 }, { 1, 1, 1 }, { 1, 1, 1 } }); 
 
-			Console.WriteLine(matrix.Transposed);
+			//Console.WriteLine(matrix.isSquare);
+			//Console.WriteLine(matrix.Trace);
+
+			Console.WriteLine(matrix.Multiply(matrix2));
+
+			//Console.WriteLine(matrix2);
 		}
 	}
 }
