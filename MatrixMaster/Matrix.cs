@@ -6,7 +6,7 @@ namespace MatrixMaster
 {
     public enum MatrixTriangularType
     {
-        Full = 0,
+        Diagonal = 0,
         Lower,
         Upper
     }
@@ -354,7 +354,42 @@ namespace MatrixMaster
         importe, et un second paramètre doit indiquer soit on souhaite vérifier si elle
         est triangulaire stricte ou non. */
 
-        public bool isTriangular(MatrixTriangularType type = MatrixTriangularType.Full, MatrixTriangularMode mode = MatrixTriangularMode.NonStrict)
+        // Identité
+        // 1 0 0
+        // 0 1 0
+        // 0 0 1
+
+        //Diagonal Strict
+        // 0 0 0
+        // 0 0 0
+        // 0 0 0
+
+        //Diagonal (Non-Strict)
+        // 3 0 0
+        // 0 2 0
+        // 0 0 3 
+
+        //Upper (Non-Strict)
+        //3 5 6
+        //0 5 4
+        //0 0 7
+
+        //Lower (Non-Strict)
+        //3 0 0
+        //0 5 0
+        //1 0 7
+
+        //Upper (Strict)
+        //0 5 6
+        //0 0 4
+        //0 0 0
+
+        //Lower (Strict)
+        //0 0 0
+        //0 0 0
+        //1 0 0
+
+        public bool isTriangular(MatrixTriangularType type = MatrixTriangularType.Diagonal, MatrixTriangularMode mode = MatrixTriangularMode.NonStrict)
         {
             return false;
         }
