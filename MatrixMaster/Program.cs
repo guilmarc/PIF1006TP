@@ -17,7 +17,7 @@ namespace MatrixMaster
             //Console.WriteLine(matrix.isSquare);
             //Console.WriteLine(matrix.Trace);
 
-            Console.WriteLine( matrix4.Determinant );
+            Console.WriteLine( matrix3.Inverse);
 
 			//Console.WriteLine(matrix2);
 		    Console.ReadLine();
