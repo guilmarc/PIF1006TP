@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace MatrixMaster
 {
@@ -44,12 +45,12 @@ namespace MatrixMaster
 		{
 			get
 			{
-				return this._matrix[row, column];
+				return this._matrix[row - 1, column - 1];
 			}
 
 			set
 			{
-				this._matrix[row, column] = value;
+				this._matrix[row - 1, column - 1] = value;
 			}
 		}
 
@@ -62,12 +63,9 @@ namespace MatrixMaster
 				{
 					double result = 0;
 
-					for (int i = 0; i < _matrix.GetLength(0); i++)
+					for (var i = 1; i <= _matrix.GetLength(0); i++)
 					{
-						for (int j = 0; j < _matrix.GetLength(1); j++)
-						{
-							if (i == j) result += _matrix[i, j];
-						}
+						result += this[i, i];
 					}
 
 					return result;
@@ -79,11 +77,93 @@ namespace MatrixMaster
 			}
 		}
 
+	    public double Complement(int row, int column)  //ici on utilise les indices mathématique
+        {
+            var sign = ((row + column) % 2) == 0 ? 1 : -1;
+
+            var minor = this.Minor(row, column);
+
+            return sign*minor.Determinant;
+
+        }
+        // | 4 8 5 9 |
+        // | 1 2 3 4 |
+        // | 0 9 8 7 |
+        // | 9 6 7 2 |
+
+		//L'addition positions donne le signe.
+		public Matrix Minor(int row, int column) //ici on utilise les indices mathématique
+		{
+		    if (!isSquare)
+		    {
+		        throw new InvalidOperationException("Matrix must be square to calcul minor");
+		    }
+
+		    var length = _matrix.GetLength(0); //Longueur de la matrice originale
+
+		    if (length < 2)
+		    {
+		        throw new InvalidOperationException("Matrix must be 2x2 or higher to calcul minor");
+		    }
+
+            var result = new Matrix(new double[length -1, length -1]);
+
+            var newRow = 1;
+            var newColumn = 1;
+
+            for (var i = 1; i <= length; i++)
+		    {
+                
+                if (i != row )
+		        {
+                    newColumn = 1;
+
+                    for (var j = 1; j <= length; j++)
+                    {
+                        if (j != column )
+                        {
+                            result[newRow, newColumn] = this[i, j];
+                            newColumn++;
+                        }
+                    }
+
+                    newRow++;
+		        }
+            }
+
+            return result;
+		}
+
+		//Cette méthode doit calculer la mineure (fonctions à créer) et l'utiliser
 		public double Determinant //calcule et retourne le déterminant de la matrice, si la matrice est carrée ;
 		{
 			get
 			{
-				return 0;
+                if (!isSquare)
+                {
+                    throw new InvalidOperationException("Matrix must be square to calcul determinant");
+                }
+
+			    int i = 1; //Nous allons calculer le déterminant en utilisant la première ligne (i = 0) et 1 pour le calcul des signes
+			    double result = 0;
+			    var length = _matrix.GetLength(1);
+
+			    if (length == 2)
+			    {
+			        result = this[1, 1] * this[2, 2] - this[1,2] * this[2,1];  //ad - bc
+			    }
+			    else
+			    {
+                    for (var j = 1; j <= _matrix.GetLength(1); j++)
+                    {
+                        var coefficient = this[i, j];
+
+                        result += coefficient * this.Complement(i, j);
+
+                    }
+                }
+
+			    return result;
 			}
 		}
 
@@ -93,11 +173,11 @@ namespace MatrixMaster
 			{
 				var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
 
-				for (int i = 0; i < _matrix.GetLength(0); i++ )
+				for (var i = 1; i <= _matrix.GetLength(0); i++ )
 				{
-					for (int j = 0; j < _matrix.GetLength(1); j++)
+					for (var j = 1; j <= _matrix.GetLength(1); j++)
 					{
-						result[j, i] = _matrix[i, j];
+						result[j, i] = this[i, j];
 					}
 				}
 
@@ -110,6 +190,11 @@ namespace MatrixMaster
 		{
 			get
 			{
+				//Il faut vérifier que le déterminant ne soit pas null
+
+
+				//Pour tester si ca marche, multiplier le résultat de CoMatrix par la matrice originale
+				//le résultat devrait donner la matrice identité.
 				return null;
 			}
 		}
@@ -147,22 +232,6 @@ namespace MatrixMaster
 			return _matrix.GetLength(dimension);
 		}
 
-		//public static Matrix operator +(Matrix m1, Matrix m2)
-		//{
-		//	var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
-
-		//	for (int i = 0; i < _matrix.GetLength(0); i++)
-		//	{
-		//		for (int j = 0; j < _matrix.GetLength(1); j++)
-		//		{
-		//			_matrix[i, j] += matrix[i, j];
-		//		}
-		//	}
-
-		//	return result;
-		//}
-
-
 		//l’addition d’une matrice, qui retourne une matrice;
 		public Matrix Add(Matrix matrix)
 		{
@@ -174,11 +243,11 @@ namespace MatrixMaster
 
 			var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
 
-			for (int i = 0; i < _matrix.GetLength(0); i++)
+			for (var i = 1; i <= _matrix.GetLength(0); i++)
 			{
-				for (int j = 0; j < _matrix.GetLength(1); j++)
+				for (var j = 1; j <= _matrix.GetLength(1); j++)
 				{
-					result[i, j] = matrix[i, j] + _matrix[i, j];
+					result[i, j] = matrix[i, j] + this[i, j];
 				}
 			}
 
@@ -190,11 +259,11 @@ namespace MatrixMaster
 		{
 			var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
 
-			for (int i = 0; i < _matrix.GetLength(0); i++)
+			for (var i = 1; i <= _matrix.GetLength(0); i++)
 			{
-				for (int j = 0; j < _matrix.GetLength(1); j++)
+				for (var j = 1; j <= _matrix.GetLength(1); j++)
 				{
-					result[i, j] = _matrix[i, j] * number;
+					result[i, j] = this[i, j] * number;
 				}
 			}
 
@@ -226,30 +295,15 @@ namespace MatrixMaster
 			//On crée la matrice résultante de la hauteur de l'origine et la largeur du multiplicandre
 			var result = new Matrix(new double[_matrix.GetLength(0), matrix.GetLength(1)]);
 
-			for (int i = 0; i < result.GetLength(0); i++)
+			for (var i = 1; i <= result.GetLength(0); i++)
 			{
-				for (int j = 0; j < result.GetLength(1); j++)
+				for (var j = 1; j <= result.GetLength(1); j++)
 				{
-					for (int k = 0; k < operations; k++)
+					for (var k = 1; k <= operations; k++)
 					{
-						result[i, j] += _matrix[i, k] * matrix[k, j];
+						result[i, j] += this[i, k] * matrix[k, j];
 					}
 				}
-			}
-
-			return result;
-		}
-
-		private static double ScalarProduct(double[] vector1, double[] vector2)
-		{
-			if (vector1.Length != vector2.Length)
-				throw new ArgumentOutOfRangeException("Invalid vector dimensions");
-
-			double result = 0;
-
-			for (int i = 0; i < vector1.Length; i++)
-			{
-				result += vector1[i] * vector2[i];
 			}
 
 			return result;
@@ -274,14 +328,14 @@ namespace MatrixMaster
 		public override string ToString()
 		{
 			string result = "";
-			for (int i = 0; i < _matrix.GetLength(0); i++) {
+			for (var i = 1; i <= _matrix.GetLength(0); i++) {
 
 				result += "|";
-				for (int j = 0; j < _matrix.GetLength(1); j++) {
+				for (var j = 1; j <= _matrix.GetLength(1); j++) {
 
-					result += _matrix[i, j];
+					result += this[i, j];
 
-					if (j < _matrix.GetLength(1) - 1) result += "\t";
+					if (j < _matrix.GetLength(1)) result += "\t";
 				}
 				result += "|\n";
 			}
