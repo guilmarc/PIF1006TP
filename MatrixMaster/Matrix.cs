@@ -342,9 +342,17 @@ namespace MatrixMaster
             return result;
         }
 
-        public Matrix Multiply(out int operations, params Matrix[] matrix)
+        public static Matrix Multiply(out int operations, params Matrix[] matrix)
         {
             operations = 0;
+            
+            //for (var i = 0; i < matrix.Length; i++)
+            //{
+                
+            //    matrix[i].Multiply()
+                        
+            //}
+
             return null;
         }
 
@@ -354,7 +362,7 @@ namespace MatrixMaster
         importe, et un second paramètre doit indiquer soit on souhaite vérifier si elle
         est triangulaire stricte ou non. */
 
-        // Identité
+        //Identité
         // 1 0 0
         // 0 1 0
         // 0 0 1
@@ -370,28 +378,62 @@ namespace MatrixMaster
         // 0 0 3 
 
         //Upper (Non-Strict)
-        //3 5 6
-        //0 5 4
-        //0 0 7
+        // 3 5 6
+        // 0 5 4
+        // 0 0 7
 
         //Lower (Non-Strict)
-        //3 0 0
-        //0 5 0
-        //1 0 7
+        // 3 0 0
+        // 0 5 0
+        // 1 0 7
 
         //Upper (Strict)
-        //0 5 6
-        //0 0 4
-        //0 0 0
+        // 0 5 6
+        // 0 0 4
+        // 0 0 0
 
         //Lower (Strict)
-        //0 0 0
-        //0 0 0
-        //1 0 0
+        // 0 0 0
+        // 0 0 0
+        // 1 0 0
 
         public bool isTriangular(MatrixTriangularType type = MatrixTriangularType.Diagonal, MatrixTriangularMode mode = MatrixTriangularMode.NonStrict)
         {
-            return false;
+			if (!isSquare)
+			{
+				throw new InvalidOperationException("Matrix must be square to calcul triangular");
+			}
+
+			var length = this.GetLength(0);
+
+			bool strict = true;
+			bool upper = true;
+			bool lower = true;
+
+			for (var i = 1; i <= length; i++)
+			{
+				for (var j = 1; j <= length; j++)
+				{
+					if (this[i, j] != 0)
+					{
+						if (i == j) strict = false;
+						if (i > j) 	upper = false;
+						if (i < j) 	lower = false;
+					}
+				}
+			}
+
+			switch (type)
+			{
+				case MatrixTriangularType.Upper:	return upper && mode == MatrixTriangularMode.Strict ? strict : true;
+
+				case MatrixTriangularType.Lower:	return lower && mode == MatrixTriangularMode.Strict ? strict : true;
+					
+				case MatrixTriangularType.Diagonal:	return lower && upper && mode == MatrixTriangularMode.Strict ? strict : true;
+
+				default:							return false;
+			}
+
         }
 
         public override string ToString()

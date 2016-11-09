@@ -10,14 +10,14 @@ namespace MatrixMaster
 
 			var matrix2 = new Matrix(new double[,] { { 9 }, { 8 }, { 7 } });
 
-			var matrix3 = new Matrix(new double[,] { { 6, 5, 5 }, { 4, 5, 6 }, { 7, 8, 9 } });
+			var matrix3 = new Matrix(new double[,] { { 0, 0, 0 }, { 0, 0, 0 }, { 9, 0, 0 } });
 
             var matrix4 = new Matrix(new double[,] { { 1, 5, 1, 1 }, { 4, 4, 4, 4 }, { 9, 10, 11, 12 }, {6, 5, 0, 0} });
 
             //Console.WriteLine(matrix.isSquare);
             //Console.WriteLine(matrix.Trace);
 
-            Console.WriteLine( matrix3.Inverse);
+			Console.WriteLine( matrix3.isTriangular( MatrixTriangularType.Lower, MatrixTriangularMode.Strict ) );
 
 			//Console.WriteLine(matrix2);
 		    Console.ReadLine();
