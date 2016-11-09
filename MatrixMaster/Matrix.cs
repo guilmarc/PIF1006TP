@@ -19,29 +19,22 @@ namespace MatrixMaster
 
     public class Matrix
     {
-        double[,] _matrix; // tableau à 2 dimensions de nombre décimaux, qui stocke la matrice.
+		/// <summary>
+		/// tableau à 2 dimensions de nombre décimaux, qui stocke la matrice.
+		/// </summary>
+		double[,] _matrix;
 
         //Constructeurs
-
-        public Matrix()
-        {
-        }
-
         public Matrix(double[,] matrix)
         {
-            this._matrix = matrix;
+			this._matrix = matrix;
         }
 
-        /* Pour l’accès et l’édition de la matrice, vous pouvez également ajouter une façon de pouvoir
-        accéder ou modifier un élément quelconque de la matrice d’une façon de votre choix, par
-        exemple :
-        - En utilisant une propriété pour accéder au tableau contenant les éléments, comme :
-            - double[,] Elements
-        - En utilisant des méthodes permettant d’obtenir ou de modifier un élément particulier
-        du tableau, comme :
-            - double GetElement(int ligne, int colonne) ta tête
-            - void SetElement(int ligne, int colonne, double valeur) */
-
+		/// <summary>
+		/// Indexeur de la classe basé sur des indices mathématique afin d'offrir à l'utilisateur une utilisation régulière des matrices
+		/// </summary>
+		/// <param name="row">Rangée (à partir de 1)</param>
+		/// <param name="column">Column (à partir de 1)</param>
         public double this[int row, int column]
         {
             get { return this._matrix[row - 1, column - 1]; }
@@ -55,7 +48,7 @@ namespace MatrixMaster
             get
             {
                 if (this.isSquare)
-                {
+                { 
                     double result = 0;
 
                     for (var i = 1; i <= _matrix.GetLength(0); i++)
@@ -81,12 +74,7 @@ namespace MatrixMaster
             return sign*minor.Determinant;
         }
 
-        // | 4 8 5 9 |
-        // | 1 2 3 4 |
-        // | 0 9 8 7 |
-        // | 9 6 7 2 |
 
-        //L'addition positions donne le signe.
         public Matrix Minor(int row, int column) //ici on utilise les indices mathématique
         {
             if (!isSquare)
@@ -306,15 +294,21 @@ namespace MatrixMaster
             return (_matrix.GetLength(0) == matrix.GetLength(0)) && (_matrix.GetLength(1) == matrix.GetLength(1));
         }
 
-        //Le produit matriciel (avec une autre Matrice), qui retourne une matrice.
-        /* Vous devez prévoir une version de cette méthode qui prend en
+		//Le produit matriciel (avec une autre Matrice), qui retourne une matrice.
+		/* Vous devez prévoir une version de cette méthode qui prend en
         paramètre un certain nombre de matrice à multiplier et qui permet de
         donner également le nombre d’opérations de produits effectués pour
         le calcul du produit matriciel. */
+		public Matrix Multiply(Matrix matrix)
+		{
+			int operations;
+			return Multiply(out operations, matrix);
+		}
 
-        public Matrix Multiply(Matrix matrix)
+        private Matrix Multiply(out int operations, Matrix matrix)
         {
-            int operations;
+			operations = 0;
+            int length;
             //Vérifie si les matrices sot compatibles à la multiplication
             if (_matrix.GetLength(1) != matrix.GetLength(0))
             {
@@ -322,7 +316,7 @@ namespace MatrixMaster
             }
             else
             {
-                operations = _matrix.GetLength(1);
+                length = _matrix.GetLength(1);
             }
 
             //On crée la matrice résultante de la hauteur de l'origine et la largeur du multiplicandre
@@ -332,9 +326,10 @@ namespace MatrixMaster
             {
                 for (var j = 1; j <= result.GetLength(1); j++)
                 {
-                    for (var k = 1; k <= operations; k++)
+                    for (var k = 1; k <= length; k++)
                     {
-                        result[i, j] += this[i, k]*matrix[k, j];
+                        result[i, j] += this[i, k] * matrix[k, j];
+						operations++;
                     }
                 }
             }
@@ -342,18 +337,22 @@ namespace MatrixMaster
             return result;
         }
 
-        public static Matrix Multiply(out int operations, params Matrix[] matrix)
+		//Mutiplication de plusieurs matrices
+        public Matrix Multiply(out int operations, params Matrix[] matrixs)
         {
             operations = 0;
-            
-            //for (var i = 0; i < matrix.Length; i++)
-            //{
-                
-            //    matrix[i].Multiply()
-                        
-            //}
+			int total = 0;
 
-            return null;
+			Matrix result = this;
+
+			for (var i = 0; i < matrixs.Length; i++)
+			{
+				result = result.Multiply(out operations, matrixs[i]);
+				total += operations;
+			}
+
+			operations = total;
+			return result;
         }
 
         /* Bool EstTriangulaire(…): retourne vrai ou faux selon si la matrice est triangulaire
@@ -361,42 +360,6 @@ namespace MatrixMaster
         on souhaite vérifier si la méthode est triangulaire inférieure, supérieure ou peu
         importe, et un second paramètre doit indiquer soit on souhaite vérifier si elle
         est triangulaire stricte ou non. */
-
-        //Identité
-        // 1 0 0
-        // 0 1 0
-        // 0 0 1
-
-        //Diagonal Strict
-        // 0 0 0
-        // 0 0 0
-        // 0 0 0
-
-        //Diagonal (Non-Strict)
-        // 3 0 0
-        // 0 2 0
-        // 0 0 3 
-
-        //Upper (Non-Strict)
-        // 3 5 6
-        // 0 5 4
-        // 0 0 7
-
-        //Lower (Non-Strict)
-        // 3 0 0
-        // 0 5 0
-        // 1 0 7
-
-        //Upper (Strict)
-        // 0 5 6
-        // 0 0 4
-        // 0 0 0
-
-        //Lower (Strict)
-        // 0 0 0
-        // 0 0 0
-        // 1 0 0
-
         public bool isTriangular(MatrixTriangularType type = MatrixTriangularType.Diagonal, MatrixTriangularMode mode = MatrixTriangularMode.NonStrict)
         {
 			if (!isSquare)
@@ -409,6 +372,7 @@ namespace MatrixMaster
 			bool strict = true;
 			bool upper = true;
 			bool lower = true;
+			bool diagonal = true;
 
 			for (var i = 1; i <= length; i++)
 			{
@@ -417,19 +381,22 @@ namespace MatrixMaster
 					if (this[i, j] != 0)
 					{
 						if (i == j) strict = false;
-						if (i > j) 	upper = false;
-						if (i < j) 	lower = false;
+						if (i < j) upper = false;
+						if (i > j) lower = false;
+					}
+					else {
+						if (i == j) diagonal = false;
 					}
 				}
 			}
 
 			switch (type)
 			{
-				case MatrixTriangularType.Upper:	return upper && mode == MatrixTriangularMode.Strict ? strict : true;
+				case MatrixTriangularType.Upper:	return upper && (mode == MatrixTriangularMode.Strict ? strict : true);
 
-				case MatrixTriangularType.Lower:	return lower && mode == MatrixTriangularMode.Strict ? strict : true;
+				case MatrixTriangularType.Lower:	return lower && (mode == MatrixTriangularMode.Strict ? strict : true);
 					
-				case MatrixTriangularType.Diagonal:	return lower && upper && mode == MatrixTriangularMode.Strict ? strict : true;
+				case MatrixTriangularType.Diagonal:	return diagonal && lower && upper && (mode == MatrixTriangularMode.Strict ? strict : true);
 
 				default:							return false;
 			}
@@ -444,7 +411,7 @@ namespace MatrixMaster
                 result += "|";
                 for (var j = 1; j <= _matrix.GetLength(1); j++)
                 {
-                    result += this[i, j];
+					result += this[i, j];
 
                     if (j < _matrix.GetLength(1)) result += "\t";
                 }
@@ -453,4 +420,44 @@ namespace MatrixMaster
             return result;
         }
     }
+
+
+
+
+	//Information complémentaire
+
+	//Identité
+	// 1 0 0
+	// 0 1 0
+	// 0 0 1
+
+	//Diagonal Strict
+	// 0 0 0
+	// 0 0 0
+	// 0 0 0
+
+	//Diagonal (Non-Strict)
+	// 3 0 0
+	// 0 2 0
+	// 0 0 3 
+
+	//Upper (Non-Strict)
+	// 3 5 6
+	// 0 5 4
+	// 0 0 7
+
+	//Lower (Non-Strict)
+	// 3 0 0
+	// 0 5 0
+	// 1 0 7
+
+	//Upper (Strict)
+	// 0 5 6
+	// 0 0 4
+	// 0 0 0
+
+	//Lower (Strict)
+	// 0 0 0
+	// 0 0 0
+	// 1 0 0
 }
