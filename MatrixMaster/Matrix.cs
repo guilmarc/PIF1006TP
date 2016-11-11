@@ -231,6 +231,10 @@ namespace MatrixMaster
                 return result;
             }
         }
+		//public bool isDeterminantNull
+		//{
+		//	get { return this.Determinant <= Double.Epsilon; }
+		//}
 
         public bool isSquare //retourne vrai ou faux selon si la matrice est carrée ou non
         {
@@ -243,7 +247,7 @@ namespace MatrixMaster
             get
             {
                 //TODO: Ajouter cette difficulté au rapport de projet.
-                return this.isSquare && this.Determinant != 0;
+				return this.isSquare && this.Determinant != 0;
             }
         }
 

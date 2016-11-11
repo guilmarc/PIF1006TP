@@ -17,16 +17,31 @@ namespace MatrixMaster
 
 			if (matrix2.GetLength(1) != 1)
 			{
-				throw new FormatException("La matrice 2 doit être de format [n, 1]");
+				throw new FormatException("La matrice 2 doit être de format [n, 1].");
 			}
 
 			if (matrix1.GetLength(0) != matrix2.GetLength(0))
 			{
-				throw new FormatException("La matrice 2 doit avoir le même nombre de rangées que la matrice 1");
+				throw new FormatException("La matrice 2 doit avoir le même nombre de rangées que la matrice 1.");
 			}
 
 			this.Matrix1 = matrix1;
 			this.Matrix2 = matrix2;
+		}
+
+		public int Length
+		{
+			get { return Matrix1.GetLength(0); }
+		}
+
+		public Matrix GetCramerMatrixAt(int index)
+		{
+			var result = this.Matrix1;
+			for (int i = 1; i < Length; i++)
+			{
+				result[i, index] = this.Matrix2[i, 1];
+			}
+			return result;
 		}
 
 		//Matrice TrouverXParCramer() : retourne une matrice X contenant les valeurs des inconnues en appliquant la règle de Cramer;
@@ -34,7 +49,20 @@ namespace MatrixMaster
 		//s’il est nul, alors il faut afficher un message explicatif à la console et retourner « null »;
 		public Matrix SolveByCramer()
 		{
-			return null;
+			if (this.Matrix1.Determinant == 0)
+			{
+				Console.WriteLine("Impossible de résoudre cette équation car le détermiannt est null.");
+				return null;
+			}
+
+			var result = new Matrix(new double[Length, 1]);
+
+			for (int i = 1; i <= Length; i++ )
+			{	
+				result[i, 1] = GetCramerMatrixAt(i).Determinant / Matrix1.Determinant;
+			}
+
+			return result;
 		}
 
 		//Matrice TrouverXParInversionMatricielle() : retourne une matrice X contenant les valeurs des inconnues en appliquant la méthode d’inversion matricielle;
@@ -81,20 +109,22 @@ namespace MatrixMaster
 		public override string ToString()
 		{
 			var result = "";
-			var length = Matrix1.GetLength(0);
+			var length = this.Length;
 
 			for (var i = 1; i <= length; i++)
 			{
-				result += "|";
-				for (var j = 1; j <= length; i++) 
+				for (var j = 1; j <= length; j++)
 				{
-					
+					result += Math.Round(Matrix1[i, j],2).ToString() + "X" + j.ToString();
+					if (j < length) result += " + ";
 				}
-				result += "| |";
+
+				result += " = " + Math.Round(Matrix2[i, 1], 2).ToString() + "\n";
 			}
 
 			return result;
 		}
+
 
 	}
 }

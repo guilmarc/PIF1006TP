@@ -7,10 +7,11 @@ namespace MatrixMaster
 		public static void Main(string[] args)
 		{
 
-			var matrix1 = new Matrix(new double[,] { { 1, 3, 0}, { 4, -1, 2}, { -2, 5, -4} });
-			Console.WriteLine(matrix1.Inverse);
-			Console.ReadLine();
-
+			var Matrix1 = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
+			var Matrix2 = new Matrix(new double[,] { { 6 }, { 2 }, { 1 } });
+			System system = new System(Matrix1, Matrix2);
+			//Console.WriteLine(system);
+			Console.WriteLine(system.SolveByCramer());
 			//string input = "";
 
 			//do
