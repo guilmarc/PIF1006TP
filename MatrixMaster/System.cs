@@ -36,7 +36,7 @@ namespace MatrixMaster
 
 		public Matrix GetCramerMatrixAt(int index)
 		{
-			var result = this.Matrix1;
+			var result = this.Matrix1.Clone();
 			for (int i = 1; i < Length; i++)
 			{
 				result[i, index] = this.Matrix2[i, 1];
