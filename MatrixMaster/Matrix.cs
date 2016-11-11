@@ -20,11 +20,14 @@ namespace MatrixMaster
     public class Matrix
     {
 		/// <summary>
-		/// tableau à 2 dimensions de nombre décimaux, qui stocke la matrice.
+		/// Tableau à 2 dimensions de nombre décimaux, qui stocke la matrice.
 		/// </summary>
 		double[,] _matrix;
 
-        //Constructeurs
+        /// <summary>
+        /// Constructeur
+        /// </summary>
+        /// <param name="matrix">new double [,]</param>
         public Matrix(double[,] matrix)
         {
 			this._matrix = matrix;
@@ -42,7 +45,9 @@ namespace MatrixMaster
             set { this._matrix[row - 1, column - 1] = value; }
         }
 
-        //TODO: Quel est le nom anglais de trace de la matrice... Layout ?
+        /// <summary>
+        /// Calcul la trace de la matrice
+        /// </summary>
         public double Trace //calcule et retourne la trace de la matrice, si la matrice est carrée ;
         {
             get
@@ -65,7 +70,12 @@ namespace MatrixMaster
             }
         }
 
-        public double Complement(int row, int column) //ici on utilise les indices mathématique
+		/// <summary>
+		/// Calcul le complément de la matrice à partir un pivot
+		/// </summary>
+		/// <param name="row">La rangée (indice mathématique)</param>
+		/// <param name="column">La colonne (indice mathématique)</param>
+        private double Complement(int row, int column)
         {
             var sign = ((row + column)%2) == 0 ? 1 : -1;
 
@@ -74,19 +84,23 @@ namespace MatrixMaster
             return sign*minor.Determinant;
         }
 
-
-        public Matrix Minor(int row, int column) //ici on utilise les indices mathématique
+		/// <summary>
+		/// Calcul de la mineure de la matrice à partir d'un point pivot
+		/// </summary>
+		/// <param name="row">La rangée (indice mathématique)</param>
+		/// <param name="column">La colonne (indice mathématique)</param>
+        private Matrix Minor(int row, int column)
         {
             if (!isSquare)
             {
-                throw new InvalidOperationException("Matrix must be square to calcul minor");
+                throw new InvalidOperationException("La matrice doit être carrée pour calculer la mineure!");
             }
 
             var length = _matrix.GetLength(0); //Longueur de la matrice originale
 
             if (length < 2)
             {
-                throw new InvalidOperationException("Matrix must be 2x2 or higher to calcul minor");
+                throw new InvalidOperationException("La matrice doit être au minimum 2x2!");
             }
 
             var result = new Matrix(new double[length - 1, length - 1]);
@@ -116,14 +130,16 @@ namespace MatrixMaster
             return result;
         }
 
-        //Cette méthode doit calculer la mineure (fonctions à créer) et l'utiliser
-        public double Determinant //calcule et retourne le déterminant de la matrice, si la matrice est carrée ;
+        /// <summary>
+        /// Calcule et retourne le déterminant de la matrice, si la matrice est carrée
+        /// </summary>
+        public double Determinant
         {
             get
             {
                 if (!isSquare)
                 {
-                    throw new InvalidOperationException("Matrix must be square to calcul determinant");
+                    throw new InvalidOperationException("La matrice doit être carrée pour calculer le déterminant!");
                 }
 
                 int i = 1;
@@ -149,7 +165,10 @@ namespace MatrixMaster
             }
         }
 
-        public Matrix Transposed //calcule et retourne la transposée de la matrice, si la matrice est carrée ;
+		/// <summary>
+		/// Calcule et retourne la transposée de la matrice, si la matrice est carrée
+		/// </summary>
+        public Matrix Transposed
         {
             get
             {
@@ -167,15 +186,17 @@ namespace MatrixMaster
             }
         }
 
-
-        public Matrix CoMatrix //calcule et retourne la comatrice de la matrice, si la matrice est carrée
+		/// <summary>
+		/// Calcule et retourne la comatrice de la matrice, si la matrice est carrée
+		/// </summary>
+        public Matrix CoMatrix
         {
             get
             {
                 //Il faut vérifier que le déterminant ne soit pas null
-				if (this.Determinant <= Double.Epsilon)
+				if (this.Determinant == 0)
                 {
-                    throw new InvalidOperationException("Unable to calcul comatrix when determinant is null");
+                    throw new InvalidOperationException("Imposible de calculer la comatrice quand le déterminant est null!");
                 }
 
                 var length = _matrix.GetLength(0);
@@ -196,7 +217,10 @@ namespace MatrixMaster
             }
         }
 
-        public Matrix Inverse //calcule et retourne la matrice inverse, si la matrice est carrée
+		/// <summary>
+		/// Calcule et retourne la matrice inverse, si la matrice est carrée
+		/// </summary>
+        public Matrix Inverse
         {
             get
             {
@@ -204,7 +228,7 @@ namespace MatrixMaster
                 //Avant de tout calculer, assurez-vous que la matrice est régulière;
                 if (!this.isRegular)
                 {
-                    throw new InvalidOperationException("Inverse will only work on regular matrix");
+                    throw new InvalidOperationException("Impossible de calculer l'inverse sur une matrice irrégulière!");
                 }
 
                 var length = this.GetLength(0);
@@ -227,22 +251,23 @@ namespace MatrixMaster
                     result = this.CoMatrix.Transposed.Scalar(1 / this.Determinant);
                 }
 
-                //Si la matrice est, en plus, triangulaire, calculez directement la matrice inverse en utilisant le schème (voir énoncé)
                 return result;
             }
         }
-		//public bool isDeterminantNull
-		//{
-		//	get { return this.Determinant <= Double.Epsilon; }
-		//}
 
+		/// <summary>
+		/// Retourne vrai ou faux selon si la matrice est carrée ou non
+		/// </summary>
         public bool isSquare //retourne vrai ou faux selon si la matrice est carrée ou non
         {
             get { return _matrix.GetLength(0) == _matrix.GetLength(1); }
         }
 
+		/// <summary>
+		/// Retourne vrai si la matrice est régulière(déterminant non nul) ou faux si la matrice est singulière(déterminant nul)
+		/// </summary>
         public bool isRegular
-            //retourne vrai si la matrice est régulière(déterminant non nul) ou faux si la matrice est singulière(déterminant nul)
+            //
         {
             get
             {
@@ -251,12 +276,17 @@ namespace MatrixMaster
             }
         }
 
+		/// <summary>
+		/// Retourne la longueur d'une dimention de la matrice
+		/// </summary>
         public int GetLength(int dimension)
         {
             return _matrix.GetLength(dimension);
         }
 
-        //l’addition d’une matrice, qui retourne une matrice;
+        /// <summary>
+        /// Additionne la matrice en cours avec une matrice en paramètre
+        /// </summary>
         public Matrix Add(Matrix matrix)
         {
             if (!this.isSameDimention(matrix))
@@ -277,7 +307,9 @@ namespace MatrixMaster
             return result;
         }
 
-        // Le produit de la matrice par un scalaire,qui retourne une matrice
+		/// <summary>
+		/// Le produit de la matrice par un scalaire,qui retourne une matrice
+		/// </summary>
         public Matrix Scalar(double number)
         {
             var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
@@ -293,11 +325,17 @@ namespace MatrixMaster
             return result;
         }
 
+		/// <summary>
+		/// Évalue si deux matrices dont de même dimention
+		/// </summary>
         public bool isSameDimention(Matrix matrix)
         {
             return (_matrix.GetLength(0) == matrix.GetLength(0)) && (_matrix.GetLength(1) == matrix.GetLength(1));
         }
 
+		/// <summary>
+		/// Evalue si la matrice est unidimentionnelle
+		/// </summary>
 		public bool isUnidimentionnal
 		{
 			get
@@ -317,6 +355,9 @@ namespace MatrixMaster
 			return Multiply(out operations, matrix);
 		}
 
+		/// <summary>
+		/// Multiplication de deux matrices
+		/// </summary>
         private Matrix Multiply(out int operations, Matrix matrix)
         {
 			operations = 0;
@@ -324,7 +365,7 @@ namespace MatrixMaster
             //Vérifie si les matrices sot compatibles à la multiplication
             if (_matrix.GetLength(1) != matrix.GetLength(0))
             {
-                throw new ArgumentOutOfRangeException("Invalid matrix length");
+                throw new ArgumentOutOfRangeException("Taille de matrices incompatibles pour la multiplication.");
             }
             else
             {
@@ -349,7 +390,9 @@ namespace MatrixMaster
             return result;
         }
 
-		//Mutiplication de plusieurs matrices
+		/// <summary>
+		/// Multiplication de plusieurs matrices en obtenant le nombre d'opérations effectués
+		/// </summary>
         public Matrix Multiply(out int operations, params Matrix[] matrixs)
         {
             operations = 0;
@@ -366,6 +409,7 @@ namespace MatrixMaster
 			operations = total;
 			return result;
         }
+
 
         /* Bool EstTriangulaire(…): retourne vrai ou faux selon si la matrice est triangulaire
         ou non ; comme arguments de la méthode, un premier paramètre doit dire si
@@ -415,11 +459,17 @@ namespace MatrixMaster
 
         }
 
+		/// <summary>
+		/// Clone la matrice en cours
+		/// </summary>
 		public Matrix Clone()
 		{
 			return new Matrix( (double[,])_matrix.Clone() );
 		}
 
+		/// <summary>
+		/// Affiche la matrice sous un format standard
+		/// </summary>
         public override string ToString()
         {
             string result = "";
@@ -437,44 +487,4 @@ namespace MatrixMaster
             return result;
         }
     }
-
-
-
-
-	//Information complémentaire
-
-	//Identité
-	// 1 0 0
-	// 0 1 0
-	// 0 0 1
-
-	//Diagonal Strict
-	// 0 0 0
-	// 0 0 0
-	// 0 0 0
-
-	//Diagonal (Non-Strict)
-	// 3 0 0
-	// 0 2 0
-	// 0 0 3 
-
-	//Upper (Non-Strict)
-	// 3 5 6
-	// 0 5 4
-	// 0 0 7
-
-	//Lower (Non-Strict)
-	// 3 0 0
-	// 0 5 0
-	// 1 0 7
-
-	//Upper (Strict)
-	// 0 5 6
-	// 0 0 4
-	// 0 0 0
-
-	//Lower (Strict)
-	// 0 0 0
-	// 0 0 0
-	// 1 0 0
 }

@@ -34,13 +34,15 @@ namespace MatrixMaster
 			get { return Matrix1.GetLength(0); }
 		}
 
-		public Matrix GetCramerMatrixAt(int index)
+		private Matrix GetCramerMatrixAt(int index)
 		{
 			var result = this.Matrix1.Clone();
-			for (int i = 1; i < Length; i++)
+			for (int i = 1; i <= Length; i++)
 			{
 				result[i, index] = this.Matrix2[i, 1];
 			}
+
+
 			return result;
 		}
 
@@ -58,7 +60,8 @@ namespace MatrixMaster
 			var result = new Matrix(new double[Length, 1]);
 
 			for (int i = 1; i <= Length; i++ )
-			{	
+			{
+				Console.WriteLine(GetCramerMatrixAt(i).Determinant);
 				result[i, 1] = GetCramerMatrixAt(i).Determinant / Matrix1.Determinant;
 			}
 
