@@ -1,18 +1,45 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MatrixMaster
 {
 	class MainClass
 	{
+
+		static List<Matrix> Matrixs = new List<Matrix>();
+
+		public static void ShowMatrixs()
+		{
+			Header("Liste des matrices en mémoire");
+			var counter = 1;
+			foreach (var matrix in Matrixs)
+			{
+				Console.WriteLine("Matrice #" + counter++.ToString() + "\n" + matrix);
+			}
+			Footer();
+		}
+
 		public static void Main(string[] args)
 		{
 
-			var Matrix1 = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
-			var Matrix2 = new Matrix(new double[,] { { 6 }, { 2 }, { 1 } });
-			System system = new System(Matrix1, Matrix2);
-			//Console.WriteLine(system);
-			Console.WriteLine(system.SolveByInversion());
-			Console.WriteLine(system.SolveByCramer());
+
+
+
+			Matrixs.AddRange(GetMatrixsFromUser());
+
+			ShowMatrixs();
+
+			//Console.WriteLine(GetMatrixFromUser());
+
+
+
+			//var Matrix1 = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
+			//var Matrix2 = new Matrix(new double[,] { { 6 }, { 2 }, { 1 } });
+			//System system = new System(Matrix1, Matrix2);
+			////Console.WriteLine(system);
+			//Console.WriteLine(system.SolveByInversion());
+			//Console.WriteLine(system.SolveByCramer());
             Console.ReadLine();
 			//string input = "";
 
@@ -50,32 +77,111 @@ namespace MatrixMaster
 			//} while (input != "Q");
 		}
 
+		public static List<Double> GetValuesFromLine(string input)
+		{
+			List<Double> values = new List<Double>();
+			foreach (var element in input.Split(' ').Where(x => !x.Equals("")).ToArray())
+			{
+				double value = 0;
+				if (Double.TryParse(element, out value))
+				{
+					values.Add(value);
+				}
+				else
+				{
+					Console.WriteLine("L'entrée " + element + " n'est pas valide.  Elle a été remplacée par 0");
+				}
+
+			}
+			return values;
+		}
+
+		public static Matrix GetMatrixFromUser()
+		{
+			//Header("Entrez la matrice en séparant les valeurs par une espace.  Appuyez sur ENTER pour une nouvelle rangée");
+
+			//Matrix result = null;
+
+			//var result = new List<double, double>();
+
+			var result = new List<List<double>>();
+			int columns;
+
+			while(true)
+			{
+
+				var values = GetValuesFromLine(Console.ReadLine().Trim());
+				columns = values.Count;
+
+				if (columns == 0)
+				{
+					return null;
+				}
+
+				result.Add(values);
+
+				while (true)
+				{
+					values = GetValuesFromLine(Console.ReadLine());
+
+					if (values.Count == 0)
+					{
+						return new Matrix(result.To2DArray());
+					}
+
+					if (values.Count == columns)
+					{
+						result.Add(values);
+					}
+					else
+					{
+						Console.WriteLine("Nombre de valeurs invalide.  Vous devez entrer " + columns + " valeurs !");
+					}
+				}
+
+
+			}
+		}
+
+		public static List<Matrix> GetMatrixsFromUser()
+		{
+			var result = new List<Matrix>();
+			Header("Ajoutez des matrices de façon naturelles");
+			AddMatrixCallback(ref result);
+			Footer();
+			return result;
+		}
+
+		private static void AddMatrixCallback(ref List<Matrix> matrixs)
+		{
+			Console.WriteLine("Ajout de la matrice #" + (matrixs.Count + 1).ToString() + " (Appuyez sur ENTER pour terminer)");
+			var newMatrix = GetMatrixFromUser();
+			if (newMatrix != null)
+			{
+				matrixs.Add(newMatrix);
+				AddMatrixCallback(ref matrixs);
+			}
+		}
+
+
 		public static void TestAdd()
 		{
-			var matrix1 = new Matrix(new double[,] { { 1, 5, 1, 1 }, { 4, 4, 4, 4 }, { 9, 10, 11, 12 }, { 6, 5, 0, 0 } });
-			var matrix2 = new Matrix(new double[,] { { 0, 0, 1, 1 }, { 8, 5, 3, 4 }, { 3, 4, 1, 0 }, { 9, 9, 1, 2 } });
-
-			var result = matrix1.Add(matrix2);
-
 			Header("Addition de deux matrices");
-			Console.WriteLine(matrix1);
+			//Console.WriteLine(matrix1);
+			var matrix1 = GetMatrixFromUser();
 			Console.WriteLine("+");
-			Console.WriteLine(matrix2);
+			var matrix2 = GetMatrixFromUser();
 			Console.WriteLine("=");
-			Console.WriteLine(result);
+			Console.WriteLine(matrix1.Add(matrix2));
 			Footer();
 		}
 
 		public static void TestInvert()
 		{
-			var matrix1 = new Matrix(new double[,] { { 1, 5, 1, 1 }, { 4, 4, 4, 4 }, { 9, 10, 11, 12 }, { 6, 5, 0, 0 } });
-
-			var result = matrix1.Inverse;
-
 			Header("Inverser une matrice");
-			Console.WriteLine(matrix1);
+			var matrix1 = GetMatrixFromUser();
 			Console.WriteLine("Résultat:");
-			Console.WriteLine(result);
+			Console.WriteLine(matrix1.Inverse);
 			Footer();
 		}
 
