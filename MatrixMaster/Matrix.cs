@@ -415,6 +415,11 @@ namespace MatrixMaster
 
         }
 
+		public Matrix Clone()
+		{
+			return new Matrix( (double[,])_matrix.Clone() );
+		}
+
         public override string ToString()
         {
             string result = "";

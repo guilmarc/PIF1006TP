@@ -12,6 +12,7 @@ namespace MatrixMaster
 			System system = new System(Matrix1, Matrix2);
 			//Console.WriteLine(system);
 			Console.WriteLine(system.SolveByInversion());
+			Console.WriteLine(system.SolveByCramer());
             Console.ReadLine();
 			//string input = "";
 
