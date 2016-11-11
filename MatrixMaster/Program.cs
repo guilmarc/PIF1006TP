@@ -11,7 +11,8 @@ namespace MatrixMaster
 			var Matrix2 = new Matrix(new double[,] { { 6 }, { 2 }, { 1 } });
 			System system = new System(Matrix1, Matrix2);
 			//Console.WriteLine(system);
-			Console.WriteLine(system.SolveByCramer());
+			Console.WriteLine(system.SolveByInversion());
+            Console.ReadLine();
 			//string input = "";
 
 			//do

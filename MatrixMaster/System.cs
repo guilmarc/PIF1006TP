@@ -75,21 +75,12 @@ namespace MatrixMaster
                 Console.WriteLine("Le determinant de la premiere matrice doit être différente de zéro.");
                 return null;
             }
-            else
-            {
-                Matrix inverse1 = this.Matrix1.Inverse;
-                Matrix product1 = inverse1.Multiply(this.Matrix2);
+          
+            Matrix inverse1 = this.Matrix1.Inverse;
+            var result = new Matrix(new double[Length, 1]);
+            result = inverse1.Multiply(this.Matrix2);
 
-                var j = 1;
-
-                for(int i=1; i<= product1.GetLength(1); i++)
-                {
-                    var Xi = product1[i, j];
-                    Console.WriteLine();
-                }
-            }
-
-            return null;
+            return result;
 		}
 
 		//Matrice TrouverXParJacobi(double epsilon) : retourne une matrice X contenant les valeurs des inconnues en appliquant la méthode itérative de Jacobi;
