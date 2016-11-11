@@ -294,6 +294,11 @@ namespace MatrixMaster
             return (_matrix.GetLength(0) == matrix.GetLength(0)) && (_matrix.GetLength(1) == matrix.GetLength(1));
         }
 
+		public bool isUnidimentionnal()
+		{
+			return true;
+		}
+
 		//Le produit matriciel (avec une autre Matrice), qui retourne une matrice.
 		/* Vous devez prévoir une version de cette méthode qui prend en
         paramètre un certain nombre de matrice à multiplier et qui permet de
