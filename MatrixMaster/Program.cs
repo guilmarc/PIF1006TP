@@ -6,40 +6,45 @@ namespace MatrixMaster
 	{
 		public static void Main(string[] args)
 		{
-			string input = "";
 
-			do
-			{
+			var matrix1 = new Matrix(new double[,] { { 1, 3, 0}, { 4, -1, 2}, { -2, 5, -4} });
+			Console.WriteLine(matrix1.Inverse);
+			Console.ReadLine();
 
-				Header("Choississez un test à effectuer");
-				Choice("1", "Additionner deux matrices");
-				Choice("2", "Multiplier deux matrices");
-				Choice("3", "Multiplier plusieurs matrices et obtenir le nombre d'opérations");
-				Choice("4", "Calculer le déterminant d'une matrice");
-				Choice("5", "Calculer la co-matrixe d'une matrice");
-				Choice("6", "Inverser une matrice");
-				Choice("7", "Calculer la trace d'une matrice");
-				Choice("8", "Obtenir la transposée d'une matrice");
-				Choice("9", "Vérifier si une matrice est triangulaire");
-				Choice("Q", "Quitter");
-				Footer();
+			//string input = "";
 
-				input = Console.ReadKey().KeyChar.ToString().ToUpper();
+			//do
+			//{
 
-				switch (input)
-				{
-					case "1":		TestAdd();				Pause();	break;
-					case "2":		TestMultiply();			Pause(); 	break;
-					case "3": 		TestMultiplyArray(); 	Pause(); 	break;
-					case "4": 		TestDeterminant(); 		Pause(); 	break;
-					case "5": 		TestCoMatrix(); 		Pause(); 	break;
-					case "6": 		TestInvert(); 			Pause(); 	break;
-					case "7": 		TestTrace(); 			Pause(); 	break;	
-					case "8": 		TestTransposed(); 		Pause(); 	break;
-					case "9": 		TestTriangular(); 		Pause(); 	break;
-				}
+			//	Header("Choississez un test à effectuer");
+			//	Choice("1", "Additionner deux matrices");
+			//	Choice("2", "Multiplier deux matrices");
+			//	Choice("3", "Multiplier plusieurs matrices et obtenir le nombre d'opérations");
+			//	Choice("4", "Calculer le déterminant d'une matrice");
+			//	Choice("5", "Calculer la co-matrixe d'une matrice");
+			//	Choice("6", "Inverser une matrice");
+			//	Choice("7", "Calculer la trace d'une matrice");
+			//	Choice("8", "Obtenir la transposée d'une matrice");
+			//	Choice("9", "Vérifier si une matrice est triangulaire");
+			//	Choice("Q", "Quitter");
+			//	Footer();
 
-			} while (input != "Q");
+			//	input = Console.ReadKey().KeyChar.ToString().ToUpper();
+
+			//	switch (input)
+			//	{
+			//		case "1":		TestAdd();				Pause();	break;
+			//		case "2":		TestMultiply();			Pause(); 	break;
+			//		case "3": 		TestMultiplyArray(); 	Pause(); 	break;
+			//		case "4": 		TestDeterminant(); 		Pause(); 	break;
+			//		case "5": 		TestCoMatrix(); 		Pause(); 	break;
+			//		case "6": 		TestInvert(); 			Pause(); 	break;
+			//		case "7": 		TestTrace(); 			Pause(); 	break;	
+			//		case "8": 		TestTransposed(); 		Pause(); 	break;
+			//		case "9": 		TestTriangular(); 		Pause(); 	break;
+			//	}
+
+			//} while (input != "Q");
 		}
 
 		public static void TestAdd()

@@ -173,7 +173,7 @@ namespace MatrixMaster
             get
             {
                 //Il faut vérifier que le déterminant ne soit pas null
-                if (this.Determinant == 0)
+				if (this.Determinant <= Double.Epsilon)
                 {
                     throw new InvalidOperationException("Unable to calcul comatrix when determinant is null");
                 }
@@ -294,9 +294,12 @@ namespace MatrixMaster
             return (_matrix.GetLength(0) == matrix.GetLength(0)) && (_matrix.GetLength(1) == matrix.GetLength(1));
         }
 
-		public bool isUnidimentionnal()
+		public bool isUnidimentionnal
 		{
-			return true;
+			get
+			{
+				return _matrix.GetLength(0) == 1 || _matrix.GetLength(1) == 1;
+			}
 		}
 
 		//Le produit matriciel (avec une autre Matrice), qui retourne une matrice.
