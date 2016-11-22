@@ -91,9 +91,27 @@ namespace MatrixMaster
 		//de la convergence, alors on retourne « null » après avoir affiché un message explicatif à la console;
 		//Le paramètre « epsilon » représente le taux d’écart minimal acceptable entre les valeurs des inconnues de deux itérations successives afin de
 		//réussir le test de terminaison, c’est-à-dire de juger la solution comme ayant convergée.
-		public Matrix SolveByJacobi()
+		public Matrix SolveByJacobi(double epsilion)
 		{
-			return null;
+			if (!this.Matrix1.isStrictlyDominantDiagonally)
+			{
+				Console.WriteLine("Impossible de calculer selon la méthode de Jacobi. Cette matrice n'est pas strictement dominante diagonalement !");
+				return null;
+			}
+
+			var diagonal = this.Matrix2.GetDiagonal();
+			var length = this.Matrix2.GetLength(0);
+
+
+
+			// Créer une matice d [n, 1] à partir de la diagonale:
+
+
+			//Créer une matrice de [n, n + 1]  -->  (n+1) = matrice2[i,0] / d[i,0].  Elle ne varie plus
+
+			//-matrice2[i, j] / d[i, 0];
+
+
 		}
 
 

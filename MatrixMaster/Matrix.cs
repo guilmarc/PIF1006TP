@@ -70,6 +70,14 @@ namespace MatrixMaster
             }
         }
 
+		public Matrix GetDiagonal()
+		{
+			var result = new Matrix(new Double[this.GetLength(0), 1]);
+			for (var i = 1; i <= this.GetLength(0); i++)
+				result[i, 1] = this[i, i];
+			return result;
+		}
+
 		/// <summary>
 		/// Calcul le complément de la matrice à partir un pivot
 		/// </summary>
@@ -458,6 +466,28 @@ namespace MatrixMaster
 			}
 
         }
+
+
+		/// <summary>
+		/// Retour vrai si la matrice est strictement dominante diagonalement
+		/// </summary>
+		public bool isStrictlyDominantDiagonally
+		{
+			get
+			{
+				for (var i = 1; i <= this.GetLength(0); i++)
+				{
+					double sum = 0;
+					for (var j = 1; j <= this.GetLength(1); j++ )
+					{
+						if (i != j) sum += this[i, j];
+					}
+					if (sum >= this[i, i]) return false;
+				}
+				return true;
+			}
+		}
+
 
 		/// <summary>
 		/// Clone la matrice en cours
