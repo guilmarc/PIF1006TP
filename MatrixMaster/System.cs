@@ -86,6 +86,7 @@ namespace MatrixMaster
             return result;
 		}
 
+
 		//Matrice TrouverXParJacobi(double epsilon) : retourne une matrice X contenant les valeurs des inconnues en appliquant la méthode itérative de Jacobi;
 		//Avant de procéder, on vérifie d’abord que la condition de convergence est respectée(la dominance diagonale stricte); si on ne peut s’assurer
 		//de la convergence, alors on retourne « null » après avoir affiché un message explicatif à la console;
@@ -113,6 +114,63 @@ namespace MatrixMaster
 
 
 		}
+
+        //Matrice TrouverXParJacobi(double epsilon) : retourne une matrice X contenant les valeurs des inconnues en appliquant la méthode itérative de Jacobi;
+        //Avant de procéder, on vérifie d’abord que la condition de convergence est respectée(la dominance diagonale stricte); si on ne peut s’assurer
+        //de la convergence, alors on retourne « null » après avoir affiché un message explicatif à la console;
+        //Le paramètre « epsilon » représente le taux d’écart minimal acceptable entre les valeurs des inconnues de deux itérations successives afin de
+        //réussir le test de terminaison, c’est-à-dire de juger la solution comme ayant convergée.
+        //public Matrix SolveByJacobi()
+        //{
+
+        public double getElement(int ligne, int colonne)
+        {
+
+            return this.[ligne][colonne];
+        }
+
+        public Matrix TrouverXJacobi(double XX)
+        {
+            Matrix MatriceXjacob = new Matrix(new double [Matrix2.GetLength(0), 1]);
+            Matrix Resultat = new Matrix(new double [Matrix2.GetLength(0), 1]);
+            MatriceXjacob.initialiser();
+
+            bool estTermine = false;
+            while (!estTermine)
+            {
+                estTermine = true;
+                Matrix previousX = Resultat;
+                for (int i = 0; i < Matrix1.GetLength(0); i++)
+                {
+                    double somme = 0;
+                    for (int j = 0; j < Matrix1.GetLength(1); j++)
+                    {
+                        if (j != i)
+                        {
+                            //somme += MatriceA.getElement(i, j) * previousX.getElement(j, 0);
+                            //somme += this.Matrix1[i,j] * this.
+                        }
+
+                    }
+                    double resultat1;
+                    resultat1 = MatriceB.getElement(i, 0) - somme;
+                    double resultatFinal;
+                    resultatFinal = 1 / MatriceA.getElement(i, i) * resultat1;
+                    Resultat.SetElement(resultatFinal, i, 0);
+                    if (Resultat.getElement(i, 0) - previousX.getElement(i, 0) >= XX)
+                    {
+                        estTermine = false;
+                    }
+                }
+
+            }
+            return Resultat;
+        }
+        //
+
+        //    return null;
+		//}
+
 
 
 
