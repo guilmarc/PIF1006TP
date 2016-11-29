@@ -85,68 +85,158 @@ namespace MatrixMaster
 
             return result;
 		}
+        
 
-        //Matrice TrouverXParJacobi(double epsilon) : retourne une matrice X contenant les valeurs des inconnues en appliquant la méthode itérative de Jacobi;
-        //Avant de procéder, on vérifie d’abord que la condition de convergence est respectée(la dominance diagonale stricte); si on ne peut s’assurer
-        //de la convergence, alors on retourne « null » après avoir affiché un message explicatif à la console;
-        //Le paramètre « epsilon » représente le taux d’écart minimal acceptable entre les valeurs des inconnues de deux itérations successives afin de
-        //réussir le test de terminaison, c’est-à-dire de juger la solution comme ayant convergée.
-        //public Matrix SolveByJacobi()
-        //{
+        //RÉSOLUTION PAR JACOBI
 
-        public double getElement(int ligne, int colonne)
+        //Les paramètres d'appel de cette fonction sont :
+
+        //Matrix1 : un tableau carré(la matrice du système);
+        //Matrix2 : un tableau unidimensionnel(le second membre du système);
+        //x1 : un tableau unidimensionnel(le vecteur de départ);
+        //Length : l'ordre de la matrice ;
+        //iter : le nombre d'itérations demandé ;
+        //eps : la précision demandée ;
+        //t : un tableau rectangulaire.
+
+        //Elle renvoie dans le tableau t les itérés successifs de la méthode de Jacobi; elle remplit ce tableau en commençant par les indices les plus élevés(t contient les derniers itérés si iter dépasse ITERMAX-1).
+
+        //La constante entière NMAX est égale à la dimension maximale de la matrice(+1);
+        //la constante entière ITERMAX est égale au nombre maximum d'itérations demandé (+1).
+
+        void sl_jacobi(int iter, double eps)
         {
-
-            return this.[ligne][colonne];
-        }
-
-        public Matrix TrouverXJacobi(double XX)
-        {
-            Matrix MatriceXjacob = new Matrix(new double [Matrix2.GetLength(0), 1]);
-            Matrix Resultat = new Matrix(new double [Matrix2.GetLength(0), 1]);
-            MatriceXjacob.initialiser();
-
-            bool estTermine = false;
-            while (!estTermine)
+            int i, j, k;
+            double alfa, s;
+            int ITERMAX = iter + 1;
+            int NMAX = Length + 1;
+           
+            var t = new Matrix(new double[NMAX, ITERMAX]);
+            //1ère variable d'inconue
+            var x1 = new Matrix(new double[NMAX, 1]);
+            //2ème variable d'inconnue
+            var x2 = new Matrix(new double[NMAX, 1]);
+            for (i = 1; i <= Length; i++)
             {
-                estTermine = true;
-                Matrix previousX = Resultat;
-                for (int i = 0; i < Matrix1.GetLength(0); i++)
+                for (j = 1; j <= iter; j++)
                 {
-                    double somme = 0;
-                    for (int j = 0; j < Matrix1.GetLength(1); j++)
-                    {
-                        if (j != i)
-                        {
-                            //somme += MatriceA.getElement(i, j) * previousX.getElement(j, 0);
-                            somme += this.Matrix1[i,j] * this.
-                        }
-
-                    }
-                    double resultat1;
-                    resultat1 = MatriceB.getElement(i, 0) - somme;
-                    double resultatFinal;
-                    resultatFinal = 1 / MatriceA.getElement(i, i) * resultat1;
-                    Resultat.SetElement(resultatFinal, i, 0);
-                    if (Resultat.getElement(i, 0) - previousX.getElement(i, 0) >= XX)
-                    {
-                        estTermine = false;
-                    }
+                    t[i, j] = 0.0;
                 }
-
             }
-            return Resultat;
+            alfa = 1.0;
+            k = 1;
+            //vérifie si le nombre d"itérations n'est pas encore atteint et si la valeur alpha n'est pas inférier à celle de eps
+            while (k <= iter && alfa > eps)
+            {
+                //ceci permet de calculer la valeur de la matrice xi
+                for (i = 1; i <= Length; i++)
+                {
+                    s = this.Matrix2[i, 1];// prend es valeurs de la matrice unidimensionnelle
+                    //ceci permet de faire le calcul sans la division
+                    for (j = 1; j <= Length; j++)
+                    {
+                        if (i != j)
+                        {
+                            s -= this.Matrix1[i, j] * x1[j, 1];
+                        }
+                    }
+                    //ceci est la division qui complete la formule
+                    x2[i, 1] = s / this.Matrix1[i, i];
+                }
+                alfa = 0.0;
+                for (i = 1; i <= Length; i++)
+                {
+                    //ici on incremente le alfa
+                    alfa += Math.Pow(x2[i, 1] - x1[i, 1], 2);
+                    x1[i, 1] = x2[i, 1];
+                }
+                for (i = 1; i <= Length; i++)
+                {
+                    for (j = 1; j <= ITERMAX - 2; j++)
+                    {
+                        t[i, j] = t[i, j + 1];
+                    }
+                    t[i, ITERMAX - 1] = x1[i, 1];
+                }
+                k++;
+            }
         }
-        //
-
-        //    return null;
-		//}
 
 
+        //Elle renvoie la norme vectorielle euclidienne de la matrice mat de dimension Length
+        double al_norme_vect(Matrix mat)
+        {
+            double t;
+            int i;
+            t = 0;
+            for (i = 1; i <= Length; i++)
+                t += mat[Length, 1] * mat[Length, 1];
+            t = Math.Sqrt(t);
+            return (t);
+        }
 
-		//Enfin, ajoutez aussi une méthode permettant d’afficher le système (sous forme d’équations ax1 + ax2 + … = b1) à la console
-		//ou dans un contrôle utilisateur(p.ex.en redéfinissant la méthode ToString() ou une méthode similaire).
-		public override string ToString()
+        //méthode elle même
+        public Matrix SolveByJacobi()
+        {
+            double eps;
+            //double t[NMAX][ITERMAX];
+            int i, j, iter;
+            int NMAX = Length + 1;
+            
+            var x = new Matrix(new double[NMAX, 1]);
+            Console.WriteLine("Méthode de Jacobi\n");
+            Console.WriteLine("                           A                                     b\n");
+            //prend au clavier la valeur seuil
+            Console.WriteLine("Entrer la valeur seuil de précision");
+            eps = double.Parse(Console.ReadLine());
+            //prend au clavier le nombre d'iterations
+            Console.WriteLine("Entrer le nombre d'itérations maximun");
+            iter = int.Parse(Console.ReadLine());
+
+            int ITERMAX = iter + 1;
+
+            var t = new Matrix(new double[NMAX, ITERMAX]);
+
+            for (i = 1; i <= Length; i++)
+            {
+                for (j = 1; j <= Length; j++)
+                {
+                    Console.WriteLine(this.Matrix1[i, j]);
+                }
+                Console.WriteLine(this.Matrix1[i, 1]);
+                x[i, 1] = 0;
+            }
+            /*Console.WriteLine("Solution exacte :\n");
+            for (i = 1; i <= Length; i++)
+            {
+                Console.WriteLine(sol[i]);
+            }*/
+            Console.WriteLine("Itérations :\n");
+            sl_jacobi(iter, eps);
+            for (j = 1; j <= iter; j++)
+            {
+                Console.WriteLine("x= (", j);
+                for (i = 1; i <= Length; i++)
+                {
+                    //x[i, 1] = t[i, j] - sol[i];
+                    Console.WriteLine(t[i, j]);
+                }
+                Console.WriteLine(")    err= \n", al_norme_vect(x));
+            }
+            Console.WriteLine("Dernier itéré :\n");
+            for (i = 1; i <= Length; i++)
+            {
+                Console.WriteLine("\n", t[i, ITERMAX - 1]);
+            }
+
+            return (t);
+        }
+
+
+
+        //Enfin, ajoutez aussi une méthode permettant d’afficher le système (sous forme d’équations ax1 + ax2 + … = b1) à la console
+        //ou dans un contrôle utilisateur(p.ex.en redéfinissant la méthode ToString() ou une méthode similaire).
+        public override string ToString()
 		{
 			var result = "";
 			var length = this.Length;
