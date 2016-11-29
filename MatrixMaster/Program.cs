@@ -8,7 +8,16 @@ namespace MatrixMaster
 	{
 		static Matrix matrix;
 
+
 		public static void Main(string[] args)
+		{
+			matrix = new Matrix(new double[,] { { 5, 1, 3 }, { 1, 3, 1 }, { 1, 3, 5 } });
+			Console.WriteLine(matrix.isStrictlyDominantDiagonally);
+
+			Console.ReadLine();
+		}
+
+		public static void Main2(string[] args)
 		{
 
 			//Afin de faciliter la correction, j'ai hardcodé la matrice présente dans les notes de cours par défaut
