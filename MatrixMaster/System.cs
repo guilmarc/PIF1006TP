@@ -221,6 +221,7 @@ namespace MatrixMaster
                     //x[i, 1] = t[i, j] - sol[i];
                     Console.WriteLine(t[i, j]);
                 }
+                //affiche et verifie les normes vectorielles
                 Console.WriteLine(")    err= \n", al_norme_vect(x));
             }
             Console.WriteLine("Dernier itéré :\n");
