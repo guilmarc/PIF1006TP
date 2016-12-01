@@ -11,22 +11,28 @@ namespace MatrixMaster
 
 		public static void Main(string[] args)
 		{
-			matrix = new Matrix(new double[,] { { 5, 1, 3 }, { 1, 3, 1 }, { 1, 3, 5 } });
-			Console.WriteLine(matrix.isStrictlyDominantDiagonally);
+			//matrix = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
+            matrix = new Matrix(new double[,] { { 4, -1, 0 }, { -1, 4, -1 }, { 0, -1, 4 } });
+            Matrix values = new Matrix(new double[,] { { 100 }, { 100 }, { 100 } });
+		    List<Matrix> matrixs = new System(matrix, values).SolveByJacobi(0.01);
 
-			Console.ReadLine();
+            Console.WriteLine("Solution par Jacobi: \n" + matrixs);
+
+
+            Console.ReadLine();
 		}
 
-		public static void Main2(string[] args)
+		public static void Main1(string[] args)
 		{
 
 			//Afin de faciliter la correction, j'ai hardcodé la matrice présente dans les notes de cours par défaut
 			//Il suffit d'inverser les commentaires pour forcer l'entrée d'une matrice
 			//Il est également possible de modifier la matrice en cours avec l'option [1]
 			//MenuSetActualMatrix();
-			matrix = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
+			//matrix = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
+            matrix = new Matrix(new double[,] { { 4, -1, 0 }, { -1, 4, -1 }, { 0, -1, 4 } });
 
-			string input = "";
+            string input = "";
 
 			do
 			{
@@ -289,7 +295,7 @@ namespace MatrixMaster
 
 				Console.WriteLine("Solution par Cramer: \n" + system.SolveByCramer());
 				Console.WriteLine("Solution par Inversion: \n" + system.SolveByInversion());
-				Console.WriteLine("Solution par Jacobi: \n" + system.SolveByJacobi());
+				Console.WriteLine("Solution par Jacobi: \n" + system.SolveByJacobi(0.05).Last());
 			}
 			catch (Exception e)
 			{

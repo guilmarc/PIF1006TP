@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MatrixMaster
 {
@@ -57,9 +58,9 @@ namespace MatrixMaster
 				return null;
 			}
 
-			var result = new Matrix(new double[Length, 1]);
+			var result = new Matrix(Length, 1);
 
-			for (int i = 1; i <= Length; i++ )
+			for ( int i = 1; i <= Length; i++ )
 			{
 				Console.WriteLine(GetCramerMatrixAt(i).Determinant);
 				result[i, 1] = GetCramerMatrixAt(i).Determinant / Matrix1.Determinant;
@@ -80,160 +81,76 @@ namespace MatrixMaster
             }
           
             Matrix inverse1 = this.Matrix1.Inverse;
-            var result = new Matrix(new double[Length, 1]);
+            var result = new Matrix(Length, 1);
             result = inverse1.Multiply(this.Matrix2);
 
             return result;
 		}
-        
 
-        //RÉSOLUTION PAR JACOBI
+	    public List<Matrix> SolveByJacobi(double epsilon = 0.05)
+	    {
 
-        //Les paramètres d'appel de cette fonction sont :
+	        const int MAX_ITERATIONS = 100;
 
-        //Matrix1 : un tableau carré(la matrice du système);
-        //Matrix2 : un tableau unidimensionnel(le second membre du système);
-        //x1 : un tableau unidimensionnel(le vecteur de départ);
-        //Length : l'ordre de la matrice ;
-        //iter : le nombre d'itérations demandé ;
-        //eps : la précision demandée ;
-        //t : un tableau rectangulaire.
 
-        //Elle renvoie dans le tableau t les itérés successifs de la méthode de Jacobi; elle remplit ce tableau en commençant par les indices les plus élevés(t contient les derniers itérés si iter dépasse ITERMAX-1).
+            if (!Matrix1.isStrictlyDominantDiagonally)
+	        {
+	            Console.WriteLine("Cette matrice ne respecte pas la condition de convergence");
+	        }
 
-        //La constante entière NMAX est égale à la dimension maximale de la matrice(+1);
-        //la constante entière ITERMAX est égale au nombre maximum d'itérations demandé (+1).
+            List<Matrix> matrixs = new List<Matrix>() { Matrix2.Copy() };
 
-        void sl_jacobi(int iter, double eps)
-        {
-            int i, j, k;
-            double alfa, s;
-            int ITERMAX = iter + 1;
-            int NMAX = Length + 1;
-           
-            var t = new Matrix(new double[NMAX, ITERMAX]);
-            //1ère variable d'inconue
-            var x1 = new Matrix(new double[NMAX, 1]);
-            //2ème variable d'inconnue
-            var x2 = new Matrix(new double[NMAX, 1]);
-            for (i = 1; i <= Length; i++)
-            {
-                for (j = 1; j <= iter; j++)
+
+            //Ajout d'une nouvelle matrice de valeurs dans la liste
+
+	        for (var k = 0; k < MAX_ITERATIONS; k++)
+	        {
+                matrixs.Add(Matrix2.Copy());
+                for ( var i = 1; i <= Length; i++ ) {
+                    matrixs[k + 1][i, 1] = (1 / Matrix1[i, i]) * (Matrix2[i, 1] - PartialScalarProduct(Matrix1, matrixs[k], i));
+                }
+
+                Console.WriteLine(matrixs[k]);
+
+                if( ConverganceObtained(matrixs, epsilon) )
                 {
-                    t[i, j] = 0.0;
+                    return matrixs;
                 }
             }
-            alfa = 1.0;
-            k = 1;
-            //vérifie si le nombre d"itérations n'est pas encore atteint et si la valeur alpha n'est pas inférier à celle de eps
-            while (k <= iter && alfa > eps)
+
+	        return matrixs;
+	    }
+
+	    private bool ConverganceObtained(List<Matrix> matrixs, double epsilon)
+	    {
+	        var k = matrixs.Count - 1;
+
+            for (var i = 1; i <= Length; i++)
             {
-                //ceci permet de calculer la valeur de la matrice xi
-                for (i = 1; i <= Length; i++)
+                if ((matrixs[k][i, 1] - matrixs[k - 1][i, 1]) >= epsilon)
                 {
-                    s = this.Matrix2[i, 1];// prend es valeurs de la matrice unidimensionnelle
-                    //ceci permet de faire le calcul sans la division
-                    for (j = 1; j <= Length; j++)
-                    {
-                        if (i != j)
-                        {
-                            s -= this.Matrix1[i, j] * x1[j, 1];
-                        }
-                    }
-                    //ceci est la division qui complete la formule
-                    x2[i, 1] = s / this.Matrix1[i, i];
+                    return false;
                 }
-                alfa = 0.0;
-                for (i = 1; i <= Length; i++)
-                {
-                    //ici on incremente le alfa
-                    alfa += Math.Pow(x2[i, 1] - x1[i, 1], 2);
-                    x1[i, 1] = x2[i, 1];
-                }
-                for (i = 1; i <= Length; i++)
-                {
-                    for (j = 1; j <= ITERMAX - 2; j++)
-                    {
-                        t[i, j] = t[i, j + 1];
-                    }
-                    t[i, ITERMAX - 1] = x1[i, 1];
-                }
-                k++;
-            }
-        }
-
-
-        //Elle renvoie la norme vectorielle euclidienne de la matrice mat de dimension Length
-        double al_norme_vect(Matrix mat)
-        {
-            double t;
-            int i;
-            t = 0;
-            for (i = 1; i <= Length; i++)
-                t += mat[Length, 1] * mat[Length, 1];
-            t = Math.Sqrt(t);
-            return (t);
-        }
-
-        //méthode elle même
-        public Matrix SolveByJacobi()
-        {
-            double eps;
-            //double t[NMAX][ITERMAX];
-            int i, j, iter;
-            int NMAX = Length + 1;
-            
-            var x = new Matrix(new double[NMAX, 1]);
-            Console.WriteLine("Méthode de Jacobi\n");
-            Console.WriteLine("                           A                                     b\n");
-            //prend au clavier la valeur seuil
-            Console.WriteLine("Entrer la valeur seuil de précision");
-            eps = double.Parse(Console.ReadLine());
-            //prend au clavier le nombre d'iterations
-            Console.WriteLine("Entrer le nombre d'itérations maximun");
-            iter = int.Parse(Console.ReadLine());
-
-            int ITERMAX = iter + 1;
-
-            var t = new Matrix(new double[NMAX, ITERMAX]);
-
-            for (i = 1; i <= Length; i++)
-            {
-                for (j = 1; j <= Length; j++)
-                {
-                    Console.WriteLine(this.Matrix1[i, j]);
-                }
-                Console.WriteLine(this.Matrix1[i, 1]);
-                x[i, 1] = 0;
-            }
-            /*Console.WriteLine("Solution exacte :\n");
-            for (i = 1; i <= Length; i++)
-            {
-                Console.WriteLine(sol[i]);
-            }*/
-            Console.WriteLine("Itérations :\n");
-            sl_jacobi(iter, eps);
-            for (j = 1; j <= iter; j++)
-            {
-                Console.WriteLine("x= (", j);
-                for (i = 1; i <= Length; i++)
-                {
-                    //x[i, 1] = t[i, j] - sol[i];
-                    Console.WriteLine(t[i, j]);
-                }
-                //affiche et verifie les normes vectorielles
-                Console.WriteLine(")    err= \n", al_norme_vect(x));
-            }
-            Console.WriteLine("Dernier itéré :\n");
-            for (i = 1; i <= Length; i++)
-            {
-                Console.WriteLine("\n", t[i, ITERMAX - 1]);
             }
 
-            return (t);
-        }
+	        return true;
+	    }
 
 
+	    private double PartialScalarProduct(Matrix a, Matrix x, int i)
+	    {
+	        double result = 0;
+
+	        for (var j = 1; j <= Length; j++)
+	        {
+	            if (i != j)
+	            {
+	                result += a[i, j]*x[j, 1];
+	            }        
+	        }
+            Console.WriteLine("i="+i + "=" + result);
+	        return result;
+	    }
 
         //Enfin, ajoutez aussi une méthode permettant d’afficher le système (sous forme d’équations ax1 + ax2 + … = b1) à la console
         //ou dans un contrôle utilisateur(p.ex.en redéfinissant la méthode ToString() ou une méthode similaire).

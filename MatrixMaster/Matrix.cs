@@ -24,23 +24,60 @@ namespace MatrixMaster
 		/// </summary>
 		double[,] _matrix;
 
-        //Constructeurs
+
+        /// <summary>
+        /// Constructeur nécessitant l'injection d'un tableau de double
+        /// </summary>
+        /// <param name="matrix"></param>
         public Matrix(double[,] matrix)
         {
 			this._matrix = matrix;
         }
 
-		/// <summary>
-		/// Indexeur de la classe basé sur des indices mathématique afin d'offrir à l'utilisateur une utilisation régulière des matrices
-		/// </summary>
-		/// <param name="row">Rangée (à partir de 1)</param>
-		/// <param name="column">Column (à partir de 1)</param>
+        /// <summary>
+        /// Constructeur permettant la création d'une matrice carrée
+        /// </summary>
+        /// <param name="length"></param>
+        public Matrix(int length)
+        {
+            this._matrix = new double[length,length];
+        }
+
+        public Matrix(int rows, int columns)
+        {
+            this._matrix = new double[rows, columns];
+        }
+
+        /// <summary>
+        /// Indexeur de la classe basé sur des indices mathématique afin d'offrir à l'utilisateur une utilisation régulière des matrices
+        /// </summary>
+        /// <param name="row">Rangée (à partir de 1)</param>
+        /// <param name="column">Column (à partir de 1)</param>
         public double this[int row, int column]
         {
             get { return this._matrix[row - 1, column - 1]; }
 
-            set { this._matrix[row - 1, column - 1] = value; }
+		    set
+		    {
+		        this._matrix[row - 1, column - 1] = value;
+
+                //Invalidation des matrices en cache selon la position de la valeur modifiée
+		        if (row == column)
+		        {
+		            _diagonal = null;
+		            _diagonalVector = null;
+		        }  else 
+                if (row > column)
+		        {
+		            _lower = null;
+		        }
+		        else
+		        {
+		            _upper = null;
+		        }
+		    }
         }
+
 
         //TODO: Quel est le nom anglais de trace de la matrice... Layout ?
         public double Trace //calcule et retourne la trace de la matrice, si la matrice est carrée ;
@@ -65,13 +102,88 @@ namespace MatrixMaster
             }
         }
 
-		public Matrix GetDiagonal()
+        private Matrix _lower;
+        public Matrix Lower
+        {
+            get
+            {
+                if (_lower == null)
+                {
+                    _lower = this.Copy();
+                    for (var i = 1; i <= this.GetLength(0); i++)
+                    {
+                        for (var j = 1; j <= this.GetLength(0); j++)
+                        {
+                            if (j > i) _lower[i, j] = this[i, j];
+                        }
+                    }
+                }
+                return _upper;
+            }
+        }
+
+        private Matrix _upper;
+        public Matrix Upper
+        {
+            get
+            {
+                if (_upper == null)
+                {
+                    _upper = this.Copy();
+                    for (var i = 1; i <= this.GetLength(0); i++)
+                    {
+                        for (var j = 1; j <= this.GetLength(0); j++)
+                        {
+                            if (j > i) _upper[i, j] = this[i, j];
+                        }
+                    }
+                }
+                return _upper;
+            }
+        }
+
+
+        private Matrix _diagonal;
+        public Matrix Diagonal
 		{
-			var result = new Matrix(new Double[this.GetLength(0), 1]);
-			for (var i = 1; i <= this.GetLength(0); i++)
-				result[i, 1] = this[i, i];
-			return result;
+            get
+		    {
+		        if (_diagonal == null)
+		        {
+		            _diagonal = this.Copy();
+		            for (var i = 1; i <= this.GetLength(0); i++)
+		                _diagonal[i, i] = this[i, i];
+		        }
+
+		        return _diagonal;
+		    }
 		}
+
+        private Matrix _diagonalVector;
+        public Matrix DiagonalVector
+        {
+            get
+            {
+                if (_diagonalVector == null)
+                {
+                    _diagonalVector = new Matrix(this.GetLength(0), 1);
+                    for (var i = 1; i <= this.GetLength(0); i++)
+                        _diagonalVector[i, 1] = this[i, i];
+                }
+
+                return _diagonalVector;
+            }
+        }
+
+
+        /// <summary>
+        /// Efectue une copie de la structure d'une matrice (sans les données)
+        /// </summary>
+        /// <returns></returns>
+        public Matrix Copy()
+        {
+            return new Matrix(this.GetLength(0), this.GetLength(1));
+        }
 
 		/// <summary>
 		/// Calcul le complément de la matrice à partir un pivot
@@ -102,7 +214,7 @@ namespace MatrixMaster
                 throw new InvalidOperationException("Matrix must be 2x2 or higher to calcul minor");
             }
 
-            var result = new Matrix(new double[length - 1, length - 1]);
+            var result = new Matrix(length - 1, length - 1);
 
             var newRow = 1;
             var newColumn = 1;
@@ -166,7 +278,7 @@ namespace MatrixMaster
         {
             get
             {
-                var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
+                var result = new Matrix(_matrix.GetLength(1), _matrix.GetLength(0));
 
                 for (var i = 1; i <= _matrix.GetLength(0); i++)
                 {
@@ -193,7 +305,7 @@ namespace MatrixMaster
 
                 var length = _matrix.GetLength(0);
 
-                var result = new Matrix(new double[length, length]);
+                var result = new Matrix(length);
 
                 for (var i = 1; i <= length; i++)
                 {
@@ -222,7 +334,7 @@ namespace MatrixMaster
 
                 var length = this.GetLength(0);
 
-                var result = new Matrix(new double[length, length]);
+                var result = new Matrix(length);
 
                 if (this.isTriangular())
                 {
@@ -277,7 +389,7 @@ namespace MatrixMaster
                 throw new ArgumentOutOfRangeException("Inconsistent matrix dimensions");
             }
 
-            var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
+            var result = new Matrix(_matrix.GetLength(1), _matrix.GetLength(0));
 
             for (var i = 1; i <= _matrix.GetLength(0); i++)
             {
@@ -293,7 +405,7 @@ namespace MatrixMaster
         // Le produit de la matrice par un scalaire,qui retourne une matrice
         public Matrix Scalar(double number)
         {
-            var result = new Matrix(new double[_matrix.GetLength(1), _matrix.GetLength(0)]);
+            var result = new Matrix(_matrix.GetLength(1), _matrix.GetLength(0));
 
             for (var i = 1; i <= _matrix.GetLength(0); i++)
             {
@@ -345,7 +457,7 @@ namespace MatrixMaster
             }
 
             //On crée la matrice résultante de la hauteur de l'origine et la largeur du multiplicandre
-            var result = new Matrix(new double[_matrix.GetLength(0), matrix.GetLength(1)]);
+            var result = new Matrix(_matrix.GetLength(0), matrix.GetLength(1));
 
             for (var i = 1; i <= result.GetLength(0); i++)
             {
