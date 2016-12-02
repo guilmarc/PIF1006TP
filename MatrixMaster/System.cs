@@ -62,7 +62,7 @@ namespace MatrixMaster
 
 			for ( int i = 1; i <= Length; i++ )
 			{
-				Console.WriteLine(GetCramerMatrixAt(i).Determinant);
+				//Console.WriteLine(GetCramerMatrixAt(i).Determinant);
 				result[i, 1] = GetCramerMatrixAt(i).Determinant / Matrix1.Determinant;
 			}
 
@@ -110,7 +110,7 @@ namespace MatrixMaster
                     matrixs[k + 1][i, 1] = (1 / Matrix1[i, i]) * (Matrix2[i, 1] - PartialScalarProduct(Matrix1, matrixs[k], i));
                 }
 
-                Console.WriteLine(matrixs[k]);
+                //Console.WriteLine(matrixs[k]);
 
                 if( ConverganceObtained(matrixs, epsilon) )
                 {
@@ -148,8 +148,8 @@ namespace MatrixMaster
 	                result += a[i, j]*x[j, 1];
 	            }        
 	        }
-            Console.WriteLine("i="+i + "=" + result);
-	        return result;
+            //Console.WriteLine("i="+i + "=" + result);
+            return result;
 	    }
 
         //Enfin, ajoutez aussi une méthode permettant d’afficher le système (sous forme d’équations ax1 + ax2 + … = b1) à la console

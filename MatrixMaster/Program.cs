@@ -8,27 +8,13 @@ namespace MatrixMaster
 	{
 		static Matrix matrix;
 
-
 		public static void Main(string[] args)
-		{
-			//matrix = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
-            matrix = new Matrix(new double[,] { { 4, -1, 0 }, { -1, 4, -1 }, { 0, -1, 4 } });
-            Matrix values = new Matrix(new double[,] { { 100 }, { 100 }, { 100 } });
-		    List<Matrix> matrixs = new System(matrix, values).SolveByJacobi(0.01);
-
-            Console.WriteLine("Solution par Jacobi: \n" + matrixs);
-
-
-            Console.ReadLine();
-		}
-
-		public static void Main1(string[] args)
 		{
 
 			//Afin de faciliter la correction, j'ai hardcodé la matrice présente dans les notes de cours par défaut
 			//Il suffit d'inverser les commentaires pour forcer l'entrée d'une matrice
 			//Il est également possible de modifier la matrice en cours avec l'option [1]
-			//MenuSetActualMatrix();
+			
 			//matrix = new Matrix(new double[,] { { 2, 1, 3 }, { 1, -2, 1 }, { 1, 1, -2 } });
             matrix = new Matrix(new double[,] { { 4, -1, 0 }, { -1, 4, -1 }, { 0, -1, 4 } });
 
