@@ -298,7 +298,7 @@ namespace MatrixMaster
             get
             {
                 //Il faut vérifier que le déterminant ne soit pas null
-				if (this.Determinant <= Double.Epsilon)
+				if (this.Determinant == 0)
                 {
                     throw new InvalidOperationException("Unable to calcul comatrix when determinant is null");
                 }
