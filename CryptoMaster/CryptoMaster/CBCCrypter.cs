@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace CryptoMaster
@@ -7,6 +8,12 @@ namespace CryptoMaster
     public class CBCCrypter
     {
 
+        //Le vecteur d’initialisation(VI), si vous le souhaitez, des raisons de simplification, peut être
+        //prédéterminé et le même à l’intérieur des méthodes de chiffrement et déchiffrement et non
+        //pas déterminé au hasard.
+
+        private static byte INIT_VECTOR = 0x0F;
+        private static byte PADDING = 0x00;
 
         //Dans un premier temps, le message au complet devra subir un chiffrement par
         //transposition en utilisant une clé de transposition au choix de l’utilisateur, composée
@@ -26,7 +33,11 @@ namespace CryptoMaster
         //reformé en une chaîne de caractère que vous retournerez à l’appelant et qui formera
         //ainsi le message chiffré. 
 
-
+        //T[n] = nième bloc de texte clair
+        //C[n] = nième bloc de texte chiffé
+        //E(m) = fonction de chiffrement du bloc m
+        //D(m) = fonction de déchiffrement du bloc m
+        //VI = Vecteur d'initialisation
 
         /// <summary>
         /// Méthode cryptant un message à l'aide de la méthode de Cipher Block Chaining
@@ -37,34 +48,86 @@ namespace CryptoMaster
         /// <returns></returns>
         public static string Crypt(string message, string key)
         {
-
-
             var transposed = getTransposed(message, key);
-            
-             
-            
 
-            return transposed;
+            var T = CBCEncoding.GetBytes(transposed);
+            var C = new byte[T.Length];
+
+            //Voici pourquoi des operations sur deux bytes retournent un int : https://blogs.msdn.microsoft.com/oldnewthing/20040310-00/?p=40323
+            C[0] = E((byte) (T[0] ^ INIT_VECTOR));
+
+            for (var n = 1; n < T.Length; n++)
+            {
+                C[n] = E((byte)(T[n] ^ C[n - 1]));
+            }
+
+            return CBCEncoding.GetString(C);
         }
 
-        private static String getTransposed(string message, string key)
+        private static Encoding CBCEncoding
+        {
+            get { return Encoding.ASCII; }
+        }
+
+        private static byte E(byte value)
+        {
+            return (byte)(value - 1);
+        }
+
+        private static byte D(byte value)
+        {
+            return (byte) (value + 1);
+        }
+
+        private static string getPadding()
+        {
+            return CBCEncoding.GetString(new byte[] {PADDING});
+        }
+
+        public static string getTransposed(string message, string key)
         {
             var transposed = "";
-            var tokens = key.Split(' ');
-            var columns = tokens.Count();
-            var rows = Math.Floor(message.Count()/(double) columns);
+            string[] tokens = key.Tokens();
+            var columns = tokens.Length;
+            var rows = (int)Math.Ceiling(message.Length/(double) columns);
 
             for (var i = 1; i <= columns; i++)
             {
-                int column = Array.IndexOf(tokens, i.ToString());
+                var column = Array.IndexOf(tokens, i.ToString());
 
                 for (var j = 0; j <= rows; j++)
                 {
-                    int index = j * columns + column;
-                    transposed += index <= (message.Count() - 1) ? message[index].ToString() : " ";
+                    var index = j * columns + column;
+                    transposed += index <= (message.Length - 1) ? message[index].ToString() : getPadding();
                 }
             }
             return transposed;
+        }
+
+        public static string getTransposedInv(string message, string key)
+        {
+            var transposedInv = "";
+            var tokens = key.Tokens();
+            var rows = tokens.Length;
+            var columns = (int)Math.Ceiling(message.Length / (double)rows);
+
+            for (var column = 0; column < columns; column++)
+            {
+                for (var row = 0; row < rows; row++)
+                {
+
+                    var position = int.Parse(tokens[row]) - 1;
+                    var index = (position*columns) + column;
+                    if (index < message.Length)
+                    {
+                        transposedInv += message[index].ToString() == getPadding() ? "" : message[index].ToString();
+                    }
+                    
+                }
+            }
+
+            return transposedInv;
+
         }
 
 
@@ -85,8 +148,29 @@ namespace CryptoMaster
         /// <returns></returns>
         public static string Decrypt(string message, string key)
         {
-            return "";
+            var C = CBCEncoding.GetBytes(message);
+            var T = new byte[C.Length];
+
+            T[0] = D( (byte)(C[0] ^ INIT_VECTOR) );
+
+            for (var n = 1; n < C.Length; n++)
+            {
+                T[n] = (byte)(D( C[n] ) ^ C[n - 1]);
+            }
+
+            return getTransposedInv(CBCEncoding.GetString(T), key);
         }
 
     }
 }
+
+//Enfin, vous pourriez avoir besoin des éléments qui suivent pour mener à bien votre travail :
+
+//- L’opérateur XOR en C# est « ^ » et doit être utilisé sur des variables de types int ou des
+//bits(valeurs booléennes) (vous aurez donc probablement des opérations de casting à faire);
+
+//- Pour passer d’un String vers un byte[], une des façons de faire consiste à instancier
+//un objet de classe ASCIIEncoding ou Encoding et appeler la méthode GetBytes().
+
+//- Pour transformer un String en un tableau de jetons(sous-chaînes), vous pouvez utiliser
+//la méthode Split() et spécifier un séparateur(p.ex.un caractère d’espacement).
