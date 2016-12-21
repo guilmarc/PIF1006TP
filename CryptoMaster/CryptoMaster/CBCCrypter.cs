@@ -12,7 +12,7 @@ namespace CryptoMaster
         //prédéterminé et le même à l’intérieur des méthodes de chiffrement et déchiffrement et non
         //pas déterminé au hasard.
 
-        private static byte INIT_VECTOR = 0x0F;
+        private static byte INIT_VECTOR = 0x0A;
         private static byte PADDING = 0x00;
 
         //Dans un premier temps, le message au complet devra subir un chiffrement par
@@ -95,7 +95,7 @@ namespace CryptoMaster
             {
                 var column = Array.IndexOf(tokens, i.ToString());
 
-                for (var j = 0; j <= rows; j++)
+                for (var j = 0; j < rows; j++)
                 {
                     var index = j * columns + column;
                     transposed += index <= (message.Length - 1) ? message[index].ToString() : getPadding();

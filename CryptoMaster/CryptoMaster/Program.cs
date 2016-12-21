@@ -26,6 +26,12 @@ namespace CryptoMaster
         //l’utilisation des méthodes de chiffrement et de déchiffrement.
         static void Main(string[] args)
         {
+            showMenu();
+        }
+
+
+        public static void showMenu()
+        {
             //La clé de transposition sera la clé transmise lors du chiffrement et la même clé devra être
             //fournie lors du déchiffrement afin de pouvoir bien ordonner les colonnes et reconstituer le
             //message d’origine ligne par ligne. 
@@ -72,10 +78,9 @@ namespace CryptoMaster
                 Console.ReadKey();
 
                 Console.Clear();
-             
-            } 
-        }
 
+            }
+        }
 
         public static string getMessage()
         {
